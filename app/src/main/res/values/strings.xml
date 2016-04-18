@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Notes</string>
+    <string name="loading">LOADING</string>
+    <string name="no_data">No data</string>
+    <!-- Drawer -->
+    <string name="navigation_view_header_title">Notes</string>
+    <string name="navigation_drawer_open_description">Open</string>
+    <string name="navigation_drawer_close_description">Close</string>
+    <!-- Menu -->
+    <string name="statistics_title">Statistics</string>
+    <string name="no_statistics_available">No statistics</string>
+    <!-- GCM -->
+    <string name="gcm_defaultSenderId">161236471500</string>
+    <!--<string name="gcm_defaultSenderId">notes-1282</string>-->
+</resources>

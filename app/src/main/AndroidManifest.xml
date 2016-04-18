@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.nichesoftware.notes"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- GCM -->
+
+    <!-- To wake up processor from sleeping while Notification arrive add following permission -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- To access Network state add following permission -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- To getAccount details for GCM reg add following permission -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <!-- To register in GCM and get back regId Token add following permission -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <!-- Some custom permission to prevent other Apps to receive GCM Notification -->
+    <permission
+        android:name="${applicationId}.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <!-- Use the custom permission add following permission -->
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".view.notes.NotesActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".view.statistics.StatisticsActivity"
+                  android:parentActivityName=".view.notes.NotesActivity">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.notes.NotesActivity" />
+        </activity>
+        <activity android:name=".view.notedetail.NoteDetailActivity"
+                  android:parentActivityName=".view.notes.NotesActivity">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.notes.NotesActivity" />
+        </activity>
+        <activity android:name=".view.addnote.AddNoteActivity"
+                  android:parentActivityName=".view.addnote.AddNoteActivity">
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.addnote.AddNoteActivity" />
+        </activity>
+        <!-- START Added for GCM -->
+
+        <!-- [Default gcm receiver] -->
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <!-- for Gingerbread GSF backward compat -->
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="com.nichesoftware.gcm" />
+            </intent-filter>
+        </receiver>
+
+        <!-- [Custom service gets push notification from server, add code in this service to show notifications] -->
+        <service
+            android:name=".android.gcm.GcmListener"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".android.gcm.GcmInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+        <!-- END Added for GCM -->
+    </application>
+
+</manifest>
