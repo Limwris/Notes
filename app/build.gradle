@@ -1,27 +1,43 @@
 apply plugin: 'com.android.application'
 
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+// See https://medium.com/@cesarmcferreira/gradle-tips-tricks-to-survive-the-zombie-apocalypse-3dd996604341#.myf6bg50h
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
-    defaultConfig {
-        applicationId "com.nichesoftware.notes"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+    def versionPropsFile = file('version.properties')
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
 
-        // Gradle Plugin 1.5
-        // disable limited support for vector drawables fro Android Studio 1.4
-        generatedDensities = ['xxhdpi', 'xhdpi', 'hdpi']
+        versionProps.load(new FileInputStream(versionPropsFile))
+        def versionMajor = versionProps['VERSION_MAJOR'].toInteger()
+        def versionMinor = versionProps['VERSION_MINOR'].toInteger()
+        def versionBuild = versionProps['VERSION_BUILD'].toInteger()
+        def versionNumber = versionMajor * 10000 + versionMinor * 1000 + versionBuild
 
-        // Gradle Plugin 2.0
-        // disable limited support for vector drawables fro Android Studio 1.4
-        // vectorDrawables.useSupportLibrary = true
+        defaultConfig {
+            applicationId "com.nichesoftware.notes"
+            minSdkVersion rootProject.ext.minSdkVersion
+            targetSdkVersion rootProject.ext.targetSdkVersion
+            versionCode versionNumber
+            versionName "${versionMajor}.${versionMinor} (${versionBuild})"
+
+            // Gradle Plugin 1.5
+            // disable limited support for vector drawables for Android Studio 1.4
+            generatedDensities = ['xxhdpi', 'xhdpi', 'hdpi']
+
+            // Gradle Plugin 2.0
+            // disable limited support for vector drawables for Android Studio 1.4
+            // vectorDrawables.useSupportLibrary = true
+        }
+    } else {
+        throw new GradleException("Could not read version.properties !")
     }
 
     // Gradle Plugin 1.5
-    // disable limited support for vector drawables fro Android Studio 1.4
+    // disable limited support for vector drawables for Android Studio 1.4
     aaptOptions {
         additionalParameters "--no-version-vectors"
     }
@@ -36,6 +52,8 @@ android {
     // If you need to add more flavors, consider using flavor dimensions.
     productFlavors {
         mock {
+            // Permit to fasten build (gradle plugin pred-dex each module)
+            minSdkVersion 21
             applicationIdSuffix = ".mock"
         }
         prod {
@@ -51,12 +69,24 @@ android {
         }
     }
 
-    // Always show the result of every unit test, even if it passes.
-    testOptions.unitTests.all {
-        testLogging {
-            events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
-        }
+    testOptions {
+        // "Method ... not mocked." (See: http://tools.android.com/tech-docs/unit-testing-support#TOC-Method)
+        unitTests.returnDefaultValues = true
     }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+// Unit tests output directly to the console
+tasks.matching {it instanceof Test}.all {
+    println(':Test ' + it)
+    testLogging.events = [TestLogEvent.FAILED,
+                          TestLogEvent.PASSED,
+                          TestLogEvent.SKIPPED,
+                          TestLogEvent.STANDARD_ERROR,
+                          TestLogEvent.STANDARD_OUT]
 }
 
 dependencies {
@@ -78,3 +108,30 @@ dependencies {
     testCompile new StringBuffer('org.powermock:powermock-module-junit4:').append(rootProject.ext.powerMockVersion).toString()
     testCompile new StringBuffer('org.powermock:powermock-api-mockito:').append(rootProject.ext.powerMockVersion).toString()
 }
+
+// Auto increment build version
+// Sources:  - http://bryankrosenbaum.com/2013/11/27/getting-to-know-gradle-auto-increment-version-and-signing-releases/
+//           - http://stackoverflow.com/questions/21405457/autoincrement-versioncode-with-gradle-extra-properties
+task incrementVersion << {
+    println(":incrementVersion - Incrementing Version...")
+
+    def versionPropsFile = file('version.properties')
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+
+        versionProps.load(new FileInputStream(versionPropsFile))
+        // Increment version build
+        def versionBuild = versionProps['VERSION_BUILD'].toInteger()
+        println(":incrementVersion - current versionCode=" + versionBuild);
+        versionBuild += 1
+        println(":incrementVersion - next versionCode=" + versionBuild);
+        // Store it
+        versionProps['VERSION_BUILD'] = versionBuild.toString()
+        versionProps.store(versionPropsFile.newWriter(), null)
+    } else {
+        throw new GradleException("Could not read version.properties !")
+    }
+    println(":incrementVersion - Version incremented...")
+}
+
+build.dependsOn 'incrementVersion'
