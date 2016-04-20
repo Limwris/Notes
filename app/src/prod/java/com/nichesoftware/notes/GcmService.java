@@ -44,4 +44,25 @@ public class GcmService implements GcmServiceApi {
             }
         });
     }
+
+    @Override
+    public void sendBroadcastMessage(final String message, final OnMessageDelivered callback) {
+        Call<Boolean> call = serviceEndpoint.sendMessage(message);
+        call.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                final Boolean result = response.body();
+                if (result) {
+                    callback.onSuccess();
+                } else {
+                    callback.onError();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                callback.onError();
+            }
+        });
+    }
 }

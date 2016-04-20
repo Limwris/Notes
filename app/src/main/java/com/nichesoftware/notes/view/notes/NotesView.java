@@ -83,17 +83,6 @@ public class NotesView extends Container implements NotesContract.View {
             }
             GcmPresenter gcmPresenter = new GcmPresenter(context, Injection.provideGcmDataProvider());
             gcmPresenter.initializeGcm();
-//            gcmPresenter.registerGcm(new GcmContract.ActionListener.RegistrationCompleteCallback() {
-//                @Override
-//                public void onRegistrationCompleted(String token, boolean isRegistered) {
-//                    if (BuildConfig.DEBUG) {
-//                        Log.d(TAG, "Registration status: " + isRegistered);
-//                        if (token != null) {
-//                            Log.d(TAG, "Registrated token: " + token);
-//                        }
-//                    }
-//                }
-//            });
         } else {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "Play Services not available...");

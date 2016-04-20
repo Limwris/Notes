@@ -4,9 +4,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.nichesoftware.notes.BuildConfig;
+import com.nichesoftware.notes.contract.NotesContract;
 import com.nichesoftware.notes.dataprovider.NoteDataProvider;
 import com.nichesoftware.notes.model.Note;
-import com.nichesoftware.notes.contract.NotesContract;
 
 import java.util.List;
 

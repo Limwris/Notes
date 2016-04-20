@@ -9,5 +9,12 @@ public interface GcmServiceApi {
         void onError();
     }
 
+    interface OnMessageDelivered {
+        void onSuccess();
+        void onError();
+    }
+
     void sendRegistrationToServer(final String token, final OnRegistrationCompleted callback);
+
+    void sendBroadcastMessage(final String message, final OnMessageDelivered callback);
 }

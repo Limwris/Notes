@@ -22,6 +22,11 @@ public class GcmDataProvider {
         void onError();
     }
 
+    public interface OnMessageDelivered {
+        void onSuccess();
+        void onError();
+    }
+
     private GcmServiceApi serviceApi;
 
     /**
@@ -122,6 +127,24 @@ public class GcmDataProvider {
 
     public void sendRegistrationToServer(final String token, final OnRegistrationCompleted callback) {
         serviceApi.sendRegistrationToServer(token, new GcmServiceApi.OnRegistrationCompleted() {
+            @Override
+            public void onSuccess() {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+
+            @Override
+            public void onError() {
+                if (callback != null) {
+                    callback.onError();
+                }
+            }
+        });
+    }
+
+    public void sendGcmMessage(final String message, final OnMessageDelivered callback) {
+        serviceApi.sendBroadcastMessage(message, new GcmServiceApi.OnMessageDelivered() {
             @Override
             public void onSuccess() {
                 if (callback != null) {

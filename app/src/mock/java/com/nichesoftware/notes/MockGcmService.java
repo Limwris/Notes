@@ -7,7 +7,12 @@ import com.nichesoftware.notes.service.GcmServiceApi;
  */
 public class MockGcmService implements GcmServiceApi {
     @Override
-    public void sendRegistrationToServer(String token) {
+    public void sendRegistrationToServer(String token, OnRegistrationCompleted callback) {
+        // TODO
+    }
 
+    @Override
+    public void sendBroadcastMessage(String message, OnMessageDelivered callback) {
+        // Todo
     }
 }

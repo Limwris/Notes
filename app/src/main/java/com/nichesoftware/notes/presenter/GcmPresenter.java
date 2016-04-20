@@ -75,7 +75,7 @@ public class GcmPresenter implements GcmContract.ActionListener {
                 @Override
                 public void onSuccess() {
                     if (BuildConfig.DEBUG) {
-                        Log.e(TAG, "Token registered token successfully in server.");
+                        Log.d(TAG, "Token registered token successfully in server.");
                     }
                     provider.setTokenSent(context, true);
                 }
@@ -89,5 +89,24 @@ public class GcmPresenter implements GcmContract.ActionListener {
                 }
             });
         }
+    }
+
+    @Override
+    public void sendGcmMessage(final String message) {
+        provider.sendGcmMessage(message, new GcmDataProvider.OnMessageDelivered() {
+            @Override
+            public void onSuccess() {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "Message sent successfully.");
+                }
+            }
+
+            @Override
+            public void onError() {
+                if (BuildConfig.DEBUG) {
+                    Log.e(TAG, "An error occurred when sending the message.");
+                }
+            }
+        });
     }
 }

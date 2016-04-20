@@ -11,7 +11,7 @@ public class Injection {
         return new NoteDataProvider(new MockNoteService());
     }
 
-    public static GcmDataProvider providerGcmDataProvider() {
+    public static GcmDataProvider provideGcmDataProvider() {
         return new GcmDataProvider(new MockGcmService());
     }
 }

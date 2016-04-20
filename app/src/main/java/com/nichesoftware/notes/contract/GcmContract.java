@@ -34,5 +34,7 @@ public interface GcmContract {
          * Register the device token on the server
          */
         void registerDeviceOnServer();
+
+        void sendGcmMessage(final String message);
     }
 }
